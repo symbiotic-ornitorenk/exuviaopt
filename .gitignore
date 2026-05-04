@@ -1,0 +1,40 @@
+# --- Python / Django (DRF) ---
+# Sanal ortam
+backend/venv/
+backend/env/
+backend/.env
+backend/__pycache__/
+backend/*.py[cod]
+backend/*$py.class
+
+# Veritabanı (Geliştirme aşamasında yüklenmemeli)
+backend/db.sqlite3
+
+# Django Medya ve Statik dosyalar
+backend/media/
+backend/staticfiles/
+
+# --- Node / React (Vite) ---
+# Kütüphaneler (Kesinlikle yüklenmemeli)
+frontend/node_modules/
+
+# Build çıktıları
+frontend/dist/
+
+# Log dosyaları
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# Vite environment dosyaları
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# --- Genel / Sistem ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
