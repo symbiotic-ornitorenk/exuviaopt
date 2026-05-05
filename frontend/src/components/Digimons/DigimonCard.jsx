@@ -1,4 +1,6 @@
 import {ATTRIBUTE_COLORS, ELEMENT_COLORS, DEFAULT_COLOR} from '../../constants/DigimonConstants';
+import {Link} from "react-router-dom";
+
 
 const DigimonCard = ({digi, index, getElementColor, onEdit, onDelete}) => {
 
@@ -25,12 +27,36 @@ const DigimonCard = ({digi, index, getElementColor, onEdit, onDelete}) => {
                 position: 'relative',
                 padding: '10px'
             }}>
-                {digi.image ? (
-                    <img src={digi.image} alt={digi.name}
-                         style={{maxWidth: '100%', maxHeight: '100%', objectFit: 'contain'}}/>
-                ) : (
-                    <span className="text-white fw-bold">{digi.name}</span>
-                )}
+                {/* Link artık en dışta, görsel olsa da olmasa da çalışacak */}
+                <Link
+                    to={`/digimon/${digi.id}`}
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '100%',
+                        height: '100%',
+                        textDecoration: 'none'
+                    }}
+                >
+                    {digi.image ? (
+                        <img
+                            src={digi.image}
+                            alt={digi.name}
+                            className="hover:opacity-90 transition-opacity cursor-pointer"
+                            style={{
+                                maxWidth: '100%',
+                                maxHeight: '100%',
+                                objectFit: 'contain'
+                            }}
+                        />
+                    ) : (
+                        /* Görsel yoksa ismini bir fallback olarak gösteriyoruz */
+                        <span className="text-white fw-bold text-center px-2">
+                {digi.name}
+            </span>
+                    )}
+                </Link>
             </div>
 
             <div className="card-body text-center p-2 bg-white">

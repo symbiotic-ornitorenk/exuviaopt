@@ -4,38 +4,42 @@ from .models import Digimon
 
 
 class DigimonSerializer(serializers.ModelSerializer):
-    # Bu alanları serializer'ın otomatik kontrolünden tamamen çıkarıyoruz.
-    # Artık DRF 'geçersiz string' veya 'geçersiz JSON' hatası veremez.
-    families = serializers.ReadOnlyField()
-    evo_from = serializers.ReadOnlyField()
-    evo_to = serializers.ReadOnlyField()
-    stats = serializers.ReadOnlyField()
+    # CRITICAL: ReadOnlyField tanımlarını kaldırdık.
+    # Artık bu alanlar hem okunabilir hem yazılabilir (writable) durumdadır.
 
     class Meta:
         model = Digimon
         fields = '__all__'
 
     def to_internal_value(self, data):
-        # FormData objesinin kopyasını alarak üzerinde işlem yapıyoruz.
-        resource_data = data.copy()
+        # 1. Standart alanları (rank, hatch, size vb.) işle
+        internal_value = super().to_internal_value(data)
 
-        json_fields = ['families', 'evo_from', 'evo_to', 'stats']
+        # 2. JSON alanlarını (string -> Python objesi) dönüştür
+        json_fields = ['stats', 'families', 'evo_from', 'evo_to']
 
         for field in json_fields:
-            value = resource_data.get(field)
-
-            if isinstance(value, str):
+            value = data.get(field)
+            if value and isinstance(value, str):
                 try:
-                    # 'undefined' veya boş string kontrolü yaparak parse ediyoruz[cite: 5].
-                    if value.strip() == "" or value == "undefined" or value == "null":
-                        resource_data[field] = [] if field != 'stats' else {}
+                    # Gelen string'i Python listesine veya sözlüğüne çeviriyoruz[cite: 3]
+                    internal_value[field] = json.loads(value)
+                except json.JSONDecodeError:
+                    # Hata durumunda modeldeki default değerleri koruyoruz[cite: 4]
+                    if field == 'stats':
+                        internal_value[field] = {}
                     else:
-                        resource_data[field] = json.loads(value)
-                except (ValueError, TypeError):
-                    resource_data[field] = [] if field != 'stats' else {}
-            elif value is None:
-                resource_data[field] = [] if field != 'stats' else {}
+                        internal_value[field] = []
 
-        # Temizlenmiş veriyi doğrudan ModelSerializer'ın ana metoduna gönderiyoruz.
-        # Bu aşamada resource_data içindeki JSON alanları artık birer Python objesidir.
-        return super().to_internal_value(resource_data)
+        print(internal_value)
+        return internal_value
+
+
+class DigimonDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Digimon
+        fields = [
+            'id', 'name', 'image', 'form', 'attribute', 'element', 'families',
+            'rank', 'hatch', 'size', 'digi_class', 'is_reborn', 'stats',
+            'evo_from', 'evo_to'
+        ]

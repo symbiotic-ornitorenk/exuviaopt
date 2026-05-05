@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom'; // 🪝 useLocation eklendi
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/authSlice';
 import { setSearchTerm } from '../store/digimonSlice';
@@ -8,6 +8,10 @@ function Navbar() {
     const { searchTerm } = useSelector((state) => state.digimons || { searchTerm: '' });
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation(); // 📍 Mevcut konumu alıyoruz
+
+    // 🔍 Sadece Digimons sayfasında mıyız kontrolü
+    const isDigimonsPage = location.pathname === '/digimons';
 
     const handleLogout = () => {
         dispatch(logout());
@@ -16,9 +20,7 @@ function Navbar() {
 
     const handleSearchChange = (e) => {
         dispatch(setSearchTerm(e.target.value));
-        if (window.location.pathname !== '/digimons') {
-            navigate('/digimons');
-        }
+        // 🚀 Artık navigate kontrolüne gerek yok çünkü bar sadece o sayfada çıkacak
     };
 
     return (
@@ -45,24 +47,26 @@ function Navbar() {
                     <Link className="nav-link" to="/">Tools</Link>
                 </div>
 
-                {/* 2. ORTA: Arama Çubuğu */}
-                <div className="d-flex mx-auto col-5 col-md-4">
-                    <div className="input-group">
-                        <input
-                            className="form-control form-control-sm bg-secondary text-white border-0 shadow-none"
-                            type="search"
-                            placeholder="Ara..."
-                            value={searchTerm}
-                            onChange={handleSearchChange}
-                        />
-                        <span className="input-group-text bg-secondary border-0 text-white-50">
-                            <i className="bi bi-search"></i>
-                        </span>
+                {/* 2. ORTA: Koşullu Arama Çubuğu 🎭 */}
+                {isDigimonsPage && (
+                    <div className="d-flex mx-auto col-5 col-md-4">
+                        <div className="input-group">
+                            <input
+                                className="form-control form-control-sm bg-secondary text-white border-0 shadow-none"
+                                type="search"
+                                placeholder="Ara..."
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                            />
+                            <span className="input-group-text bg-secondary border-0 text-white-50">
+                                <i className="bi bi-search"></i>
+                            </span>
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* 3. SAĞ: Kullanıcı Paneli */}
-                <div className="d-flex align-items-center ms-auto">
+                <div className={`d-flex align-items-center ${isDigimonsPage ? 'ms-auto' : 'ms-auto'}`}>
                     {isAuthenticated ? (
                         <div className="dropdown">
                             <button
@@ -95,7 +99,6 @@ function Navbar() {
                         <Link className="btn btn-sm btn-primary px-3 fw-bold" to="/login">Giriş Yap</Link>
                     )}
 
-                    {/* Mobil Menü */}
                     <button
                         className="navbar-toggler p-1 border-0 ms-2"
                         type="button"

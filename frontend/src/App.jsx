@@ -5,6 +5,7 @@ import Login from './pages/Auth/Login.jsx';
 import Register from './pages/Auth/Register.jsx';
 import Dashboard from './pages/Dashboard';
 import DigimonList from "./pages/Digimons/DigimonList.jsx";
+import DigimonDetail from "./pages/Digimons/DigimonDetail.jsx";
 
 // 1. Korumalı Rota Bileşeni
 const PrivateRoute = ({ children }) => {
@@ -38,6 +39,12 @@ const AppContent = () => {
                     <Route path="/digimons" element={
                         <PrivateRoute>
                             <DigimonList />
+                        </PrivateRoute>
+                    } />
+
+                     <Route path="/digimon/:id" element={
+                        <PrivateRoute>
+                            <DigimonDetail />
                         </PrivateRoute>
                     } />
 
